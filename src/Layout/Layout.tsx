@@ -1,6 +1,7 @@
 import React from 'react';
 import styled from '@emotion/styled';
 import Header from '../Components/Header';
+import Dashboard from '../pages/Dashboard';
 
 interface LayoutProps {
 }
@@ -16,7 +17,7 @@ const Layout: React.FC<LayoutProps> = () => {
     const renderContent = () => {
         switch(currentTab) {
             case 0:
-                return <div>대시보드</div>
+                return <Dashboard />
             case 1:
                 return <div>로그</div>
             default:
