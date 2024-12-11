@@ -4,8 +4,48 @@ import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import React, { useState } from 'react';
 
 const InfoTableList = () => {
-    const [open, setOpen] = useState(true);
+    const [openStates, setOpenStates] = useState({
+        SiteInfo: true,
+        ApplicationInfo: true,
+        UIServerInfo: true, 
+    });
 
+    const [siteInfo, setSiteInfo] = useState({
+        siteName: '1',
+        databaseTime: '2',
+        localTime: '3',
+        serverVersion: '4',
+        clientVersion: '5'
+    });
+
+    const [applicationInfo, setApplicationInfo] = useState([{
+        'name': 'CS01_P',
+        'type': 'control',
+        'state' : 'active'
+    },
+    {
+        'name': 'DS01_P',
+        'type': 'daemon',
+        'state' : 'active'
+    }
+]);
+
+    const [uiServerInfo, setUiServerInfo] = useState({
+
+    });
+    // 섹션별 데이터 매핑 객체
+    const sectionDataMap = {
+        SiteInfo: <SiteInfoTable siteInfo={siteInfo} />,
+        ApplicationInfo: <ApplicationInfoTable applicationInfo={applicationInfo}/>,
+        UIServerInfo: <></>
+    };
+
+    const toggleSection = (section: keyof typeof openStates) => {
+        setOpenStates(prev => ({
+            ...prev,
+            [section]: !prev[section]
+        }));
+    }
     return (
         <>
             <TableContainer
@@ -15,13 +55,14 @@ const InfoTableList = () => {
                     overflowX: 'hidden',
                 }}
             >
-                <Table size='small'>
+                {Object.entries(openStates).map(([key, value]) => (
+                    <Table size='small'>
                     <TableHead>
                         <TableRow>
                             <TableCell 
                                 colSpan={2} 
                                 sx={{ 
-                                    fontSize: '1.5rem',
+                                    fontSize: '1.0rem',
                                     fontWeight: 'bold',
                                     textAlign: 'center',
                                     cursor: 'pointer',
@@ -31,11 +72,11 @@ const InfoTableList = () => {
                                     gap: 1,
                                     width: '100%'
                                 }}
-                                onClick={() => setOpen(!open)}
+                                onClick={() => toggleSection(key as keyof typeof openStates)}
                             >
-                                Site Info
+                                {key}
                                 <IconButton size="small">
-                                    {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
+                                    {value ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
                                 </IconButton>
                             </TableCell>
                         </TableRow>
@@ -43,39 +84,74 @@ const InfoTableList = () => {
                     <TableBody>
                         <TableRow>
                             <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={2}>
-                                <Collapse in={open} timeout="auto" unmountOnExit>
+                                <Collapse in={value} timeout="auto" unmountOnExit>
                                     <Table size="small">
                                         <TableBody>
-                                            <TableRow>
-                                                <TableCell>Site Name</TableCell>
-                                                <TableCell>1</TableCell>
-                                            </TableRow>
-                                            <TableRow>
-                                                <TableCell>Database Time</TableCell>
-                                                <TableCell>2</TableCell>
-                                            </TableRow>
-                                            <TableRow>
-                                                <TableCell>Local Time</TableCell>
-                                                <TableCell>3</TableCell>
-                                            </TableRow>
-                                            <TableRow>
-                                                <TableCell>Server Version</TableCell>
-                                                <TableCell>4</TableCell>
-                                            </TableRow>
-                                            <TableRow>
-                                                <TableCell>Client Version</TableCell>
-                                                <TableCell>5</TableCell>
-                                            </TableRow>
+                                            {sectionDataMap[key as keyof typeof sectionDataMap]}
                                         </TableBody>
                                     </Table>
                                 </Collapse>
                             </TableCell>
                         </TableRow>
-                    </TableBody>
-                </Table>
+                            </TableBody>
+                        </Table>
+                    ))}
+            
             </TableContainer>
         </>
     )
+}
+
+interface SiteInfoTableProps {
+    siteInfo: {
+        siteName: string;
+        databaseTime: string;
+        localTime: string;
+        serverVersion: string;
+        clientVersion: string;
+    }
+}
+
+const SiteInfoTable = ({siteInfo}: SiteInfoTableProps) => {
+    return (
+        <>
+            {Object.entries(siteInfo).map(([key, value]) => (
+                <TableRow key={key}>
+                    <TableCell>{key}</TableCell>
+                    <TableCell>{value}</TableCell>
+                </TableRow>
+            ))}
+        </>
+    );
+}
+
+interface ApplicationInfoTableProps {
+    applicationInfo: {
+        name: string;
+        type: string;
+        state: string;
+    }[]
+}
+
+const ApplicationInfoTable = ({applicationInfo}: ApplicationInfoTableProps) => {
+    
+    return (
+        <>  
+            <TableRow>
+                <TableCell sx={{ fontWeight: 'bold', backgroundColor: '#f5f5f5' }}>App Name</TableCell>
+                <TableCell sx={{ fontWeight: 'bold', backgroundColor: '#f5f5f5' }}>유형</TableCell>
+                <TableCell sx={{ fontWeight: 'bold', backgroundColor: '#f5f5f5' }}>상태</TableCell>
+            </TableRow>
+
+            {applicationInfo.map((app) => (
+                <TableRow key={app.name}>
+                    <TableCell>{app.name}</TableCell>
+                    <TableCell>{app.type}</TableCell>
+                    <TableCell>{app.state}</TableCell>
+                </TableRow>
+            ))}
+        </>
+    );
 }
 
 export default InfoTableList;
